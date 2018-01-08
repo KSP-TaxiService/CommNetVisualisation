@@ -228,9 +228,9 @@ namespace CommNetVisualisation.CommNetLayer
                         var vessels = FlightGlobals.fetch.vessels;
                         for (int i = 0; i < vessels.Count; i++)
                         {
-                            var commnetvessel = vessels[i].connection as CNVCommNetVessel;
-                            commnetvessel.computeUnloadedUpdate(); //network update is done only once for unloaded vessels so need to manually re-trigger every time
-                            //TODO: try reflection way to access protected attribute
+                            var commnetvessel = vessels[i].connection;
+                            SetPrivatePropertyValue<CommNetVessel>(commnetvessel, "unloadedDoOnce", true);//network update is done only once for unloaded vessels so need to manually re-trigger every time
+                            //don't want to override CommNetVessel to just set the boolean flag
 
                             if (!(commnetvessel.ControlState == VesselControlState.Probe || commnetvessel.ControlState == VesselControlState.Kerbal ||
                                 commnetvessel.ControlPath == null || commnetvessel.ControlPath.Count == 0))
@@ -347,6 +347,22 @@ namespace CommNetVisualisation.CommNetLayer
             {
                 this.line.SetWidth(this.lineWidth2D);
                 this.line.Draw();
+            }
+        }
+
+        /// <summary>
+        /// Change the non-public property of target T
+        /// </summary>
+        //Copied from https://stackoverflow.com/questions/1565734/is-it-possible-to-set-private-property-via-reflection
+        public static void SetPrivatePropertyValue<T>(T obj, string propertyName, object newValue)
+        {
+            foreach (FieldInfo fi in obj.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic))
+            {
+                if (fi.Name.Contains(propertyName))
+                {
+                    fi.SetValue(obj, newValue);
+                    break;
+                }
             }
         }
     }

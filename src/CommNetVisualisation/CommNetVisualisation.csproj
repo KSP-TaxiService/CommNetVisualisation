@@ -53,14 +53,16 @@
     <Compile Include="CommNetLayer\CNVCommNetScenario.cs" />
     <Compile Include="CommNetLayer\CNVCommNetUI.cs" />
     <Compile Include="CommNetLayer\CNVCommNetUIModeButton.cs" />
-    <Compile Include="CommNetLayer\CNVCommNetVessel.cs" />
     <Compile Include="CommNetLayer\CNVTelemetryUpdate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>"D:\KSPTools\pdb2mdb\pdb2mdb.exe" "$(TargetFileName)"</PostBuildEvent>
+    <PostBuildEvent>"D:\KSPTools\pdb2mdb\pdb2mdb.exe" "$(TargetFileName)"
+xcopy /Y "$(TargetPath)" "E:\GitHub\CommNetVisualisation\GameData\CommNetVisualisation\Plugins"
+xcopy /Y "$(TargetDir)$(TargetName).pdb" "E:\GitHub\CommNetVisualisation\GameData\CommNetVisualisation\Plugins"
+xcopy /Y "$(TargetDir)$(TargetName).dll.mdb" "E:\GitHub\CommNetVisualisation\GameData\CommNetVisualisation\Plugins"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

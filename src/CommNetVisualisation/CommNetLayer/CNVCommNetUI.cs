@@ -229,6 +229,11 @@ namespace CommNetVisualisation.CommNetLayer
                         for (int i = 0; i < vessels.Count; i++)
                         {
                             var commnetvessel = vessels[i].connection;
+                            if(commnetvessel == null) // like flag
+                            {
+                                continue;
+                            }
+
                             SetPrivatePropertyValue<CommNetVessel>(commnetvessel, "unloadedDoOnce", true);//network update is done only once for unloaded vessels so need to manually re-trigger every time
                             //don't want to override CommNetVessel to just set the boolean flag
 
@@ -356,6 +361,12 @@ namespace CommNetVisualisation.CommNetLayer
         //Copied from https://stackoverflow.com/questions/1565734/is-it-possible-to-set-private-property-via-reflection
         public static void SetPrivatePropertyValue<T>(T obj, string propertyName, object newValue)
         {
+            if(obj == null)
+            {
+                UnityEngine.Debug.LogError("Object to access one of its non-public attributes is null!");
+                return;
+            }
+
             foreach (FieldInfo fi in obj.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic))
             {
                 if (fi.Name.Contains(propertyName))

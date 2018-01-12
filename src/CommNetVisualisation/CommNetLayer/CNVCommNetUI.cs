@@ -1,4 +1,5 @@
 ﻿using CommNet;
+using KSP.Localization;
 using KSP.UI.Screens.Mapview;
 using System;
 using System.Collections.Generic;
@@ -37,7 +38,6 @@ namespace CommNetVisualisation.CommNetLayer
         public static CustomDisplayMode CustomModeTrackingStation = CustomDisplayMode.Network;
         public static CustomDisplayMode CustomModeFlightMap = CustomDisplayMode.Path;
         private static int CustomModeCount = Enum.GetValues(typeof(CustomDisplayMode)).Length;
-        private static readonly string displayModeMessagePrefix = "Link visualisation is ";
 
         public static new CNVCommNetUI Instance
         {
@@ -77,7 +77,10 @@ namespace CommNetVisualisation.CommNetLayer
             }
 
             this.points.Clear();
-            ScreenMessages.PostScreenMessage(displayModeMessagePrefix + CNVCommNetUI.CustomMode.displayDescription(), 5f);
+            ScreenMessages.PostScreenMessage(Localizer.Format("#autoLOC_118264", new string[]
+            {
+                Localizer.Format(CNVCommNetUI.CustomMode.displayDescription())
+            }), 5f);
         }
 
         /// <summary>
@@ -98,7 +101,10 @@ namespace CommNetVisualisation.CommNetLayer
             }
 
             this.points.Clear();
-            ScreenMessages.PostScreenMessage(displayModeMessagePrefix + CNVCommNetUI.CustomMode.displayDescription(), 5f);
+            ScreenMessages.PostScreenMessage(Localizer.Format("#autoLOC_118530", new string[]
+            {
+                Localizer.Format(CNVCommNetUI.CustomMode.displayDescription())
+            }), 5f);
         }
 
         /// <summary>
@@ -142,7 +148,10 @@ namespace CommNetVisualisation.CommNetLayer
                     if (CustomModeTrackingStation != CustomDisplayMode.Network && CustomModeTrackingStation != CustomDisplayMode.MultiPaths)
                     {
                         CustomModeTrackingStation = CustomDisplayMode.Network;
-                        ScreenMessages.PostScreenMessage(displayModeMessagePrefix + CustomModeTrackingStation.displayDescription(), 5f);
+                        ScreenMessages.PostScreenMessage(Localizer.Format("#autoLOC_118264", new string[]
+                        {
+                            Localizer.Format(CustomModeTrackingStation.displayDescription())
+                        }), 5f);
                     }
                 }
             }

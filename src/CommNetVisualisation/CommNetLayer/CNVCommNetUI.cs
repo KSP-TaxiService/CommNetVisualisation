@@ -19,17 +19,17 @@ namespace CommNetVisualisation.CommNetLayer
         /// </summary>
         public enum CustomDisplayMode
         {
-            [Description("None")]
+            [Description("#autoLOC_6003083")]
             None,
-            [Description("First Hop")]
+            [Description("#autoLOC_6003084")]
             FirstHop,
-            [Description("Working Connection")]
+            [Description("#autoLOC_CommNetVisualisation_ModePath")]
             Path,
-            [Description("Vessel Links")]
+            [Description("#autoLOC_6003086")]
             VesselLinks,
-            [Description("Network")]
+            [Description("#autoLOC_6003087")]
             Network,
-            [Description("All Working Connections")]
+            [Description("#autoLOC_CommNetVisualisation_ModeMultiPaths")]
             MultiPaths
         }
 

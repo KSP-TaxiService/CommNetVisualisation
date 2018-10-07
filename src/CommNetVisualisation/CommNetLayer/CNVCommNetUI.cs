@@ -180,6 +180,7 @@ namespace CommNetVisualisation.CommNetLayer
             //work out which links to display
             int count = this.points.Count;//save previous value
             int numLinks = 0;
+            bool pathLinkExist;
             switch (CNVCommNetUI.CustomMode)
             {
                 case CNVCommNetUI.CustomDisplayMode.None:
@@ -231,9 +232,9 @@ namespace CommNetVisualisation.CommNetLayer
                     }
                     else
                     {
-                        CommPath newPath = new CommPath();
+                        path = new CommPath();
+                        path.Capacity = net.Links.Count;
 
-                        var nodes = net;
                         var vessels = FlightGlobals.fetch.vessels;
                         for (int i = 0; i < vessels.Count; i++)
                         {
@@ -249,19 +250,28 @@ namespace CommNetVisualisation.CommNetLayer
                             if (!(commnetvessel.ControlState == VesselControlState.Probe || commnetvessel.ControlState == VesselControlState.Kerbal ||
                                 commnetvessel.ControlPath == null || commnetvessel.ControlPath.Count == 0))
                             {
-                                for (int pathIndex = 0; pathIndex < commnetvessel.ControlPath.Count; pathIndex++)
+                                //add each link in control path to overall path
+                                for (int controlpathIndex = 0; controlpathIndex < commnetvessel.ControlPath.Count; controlpathIndex++)
                                 {
-                                    var link = commnetvessel.ControlPath[pathIndex];
-                                    if (newPath.Find(x => x.a.precisePosition == link.a.precisePosition && x.b.precisePosition == link.b.precisePosition) == null)//not found in list of links to be displayed
+                                    pathLinkExist = false;
+                                    for (int overallpathIndex = 0; overallpathIndex < path.Count; overallpathIndex++)//check if overall path has this link already
                                     {
-                                        newPath.Add(link); //laziness wins
+                                        if (path[overallpathIndex].a.precisePosition == commnetvessel.ControlPath[controlpathIndex].a.precisePosition &&
+                                            path[overallpathIndex].b.precisePosition == commnetvessel.ControlPath[controlpathIndex].b.precisePosition)
+                                        {
+                                            pathLinkExist = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!pathLinkExist)
+                                    {
+                                        path.Add(commnetvessel.ControlPath[controlpathIndex]); //laziness wins
                                         //KSP techincally does not care if path is consisted of non-continuous links or not
                                     }
                                 }
                             }
                         }
 
-                        path = newPath;
                         path.GetPoints(this.points, true);
                         numLinks = path.Count;
                     }
@@ -300,56 +310,49 @@ namespace CommNetVisualisation.CommNetLayer
             switch (CNVCommNetUI.CustomMode)
             {
                 case CNVCommNetUI.CustomDisplayMode.FirstHop:
-                    {
-                        float lvl = Mathf.Pow((float)path.First.signalStrength, this.colorLerpPower);
-                        if (this.swapHighLow)
-                            this.line.SetColor(Color.Lerp(this.colorHigh, this.colorLow, lvl), 0);
-                        else
-                            this.line.SetColor(Color.Lerp(this.colorLow, this.colorHigh, lvl), 0);
+                {
+                        this.line.SetColor(colorBlending(this.colorHigh,
+                                                         this.colorLow,
+                                                         Mathf.Pow((float)path.First.signalStrength, this.colorLerpPower)),
+                                                         0);
                         break;
-                    }
+                }
                 case CNVCommNetUI.CustomDisplayMode.Path:
                 case CNVCommNetUI.CustomDisplayMode.MultiPaths:
-                    {
-                        int linkIndex = numLinks;
-                        for (int i = linkIndex - 1; i >= 0; i--)
-                        {
-                            float lvl = Mathf.Pow((float)path[i].signalStrength, this.colorLerpPower);
-                            if (this.swapHighLow)
-                                this.line.SetColor(Color.Lerp(this.colorHigh, this.colorLow, lvl), i);
-                            else
-                                this.line.SetColor(Color.Lerp(this.colorLow, this.colorHigh, lvl), i);
-                        }
-                        break;
-                    }
-                case CNVCommNetUI.CustomDisplayMode.VesselLinks:
-                    {
-                        var itr = node.Values.GetEnumerator();
-                        int linkIndex = 0;
-                        while (itr.MoveNext())
-                        {
-                            CommLink link = itr.Current;
-                            float lvl = Mathf.Pow((float)link.GetSignalStrength(link.a != node, link.b != node), this.colorLerpPower);
-                            if (this.swapHighLow)
-                                this.line.SetColor(Color.Lerp(this.colorHigh, this.colorLow, lvl), linkIndex++);
-                            else
-                                this.line.SetColor(Color.Lerp(this.colorLow, this.colorHigh, lvl), linkIndex++);
-                        }
-                        break;
-                    }
-                case CNVCommNetUI.CustomDisplayMode.Network:
-                    {
+                {
                         for (int i = numLinks - 1; i >= 0; i--)
                         {
-                            CommLink commLink = net.Links[i];
-                            float lvl = Mathf.Pow((float)net.Links[i].GetBestSignal(), this.colorLerpPower);
-                            if (this.swapHighLow)
-                                this.line.SetColor(Color.Lerp(this.colorHigh, this.colorLow, lvl), i);
-                            else
-                                this.line.SetColor(Color.Lerp(this.colorLow, this.colorHigh, lvl), i);
+                            this.line.SetColor(colorBlending(this.colorHigh,
+                                                             this.colorLow,
+                                                             Mathf.Pow((float)path[i].signalStrength, this.colorLerpPower)),
+                                                             i);
                         }
                         break;
-                    }
+                }
+                case CNVCommNetUI.CustomDisplayMode.VesselLinks:
+                {
+                        CommLink[] links = new CommLink[node.Count];
+                        node.Values.CopyTo(links, 0);
+                        for (int i = 0; i < links.Length; i++)
+                        {
+                            this.line.SetColor(colorBlending(this.colorHigh,
+                                                             this.colorLow,
+                                                             Mathf.Pow((float)links[i].GetSignalStrength(links[i].a != node, links[i].b != node), this.colorLerpPower)),
+                                                             i);
+                        }
+                        break;
+                }
+                case CNVCommNetUI.CustomDisplayMode.Network:
+                {
+                        for (int i = numLinks - 1; i >= 0; i--)
+                        {
+                            this.line.SetColor(colorBlending(this.colorHigh,
+                                                             this.colorLow,
+                                                             Mathf.Pow((float)net.Links[i].GetBestSignal(), this.colorLerpPower)),
+                                                             i);
+                        }
+                        break;
+                }
             } // end of switch
 
             if (this.draw3dLines)
@@ -383,6 +386,25 @@ namespace CommNetVisualisation.CommNetLayer
                     fi.SetValue(obj, newValue);
                     break;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Compute final color based on inputs
+        /// </summary>
+        private Color colorBlending(Color colorHigh, Color colorLow, float colorLevel)
+        {
+            if (colorHigh == Color.clear)
+            {
+                return colorHigh;
+            }
+            else if (this.swapHighLow)
+            {
+                return Color.Lerp(colorHigh, colorLow, colorLevel);
+            }
+            else
+            {
+                return Color.Lerp(colorLow, colorHigh, colorLevel);
             }
         }
     }

@@ -46,6 +46,15 @@ namespace CommNetVisualisation.CommNetLayer
         }
 
         /// <summary>
+        /// Activate things when the player enter a scene that uses CommNet UI
+        /// </summary>
+        public override void Show()
+        {
+            this.lineWidth3D = this.lineWidth2D; //lineWidth3D=1 is too thin to see
+            base.Show();
+        }
+
+        /// <summary>
         /// Run own display updates
         /// </summary>
         protected override void UpdateDisplay()

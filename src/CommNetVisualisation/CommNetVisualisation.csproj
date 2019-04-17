@@ -31,10 +31,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>D:\KSPTools\StockKSP1.5.0\KSP_x64_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>D:\KSPTools\StockKSP1.7\KSP_x64_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>D:\KSPTools\StockKSP1.5.0\KSP_x64_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+      <HintPath>D:\KSPTools\StockKSP1.7\KSP_x64_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -43,10 +43,10 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="UnityEngine">
-      <HintPath>D:\KSPTools\StockKSP1.5.0\KSP_x64_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>D:\KSPTools\StockKSP1.7\KSP_x64_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>D:\KSPTools\StockKSP1.5.0\KSP_x64_Data\Managed\UnityEngine.UI.dll</HintPath>
+      <HintPath>D:\KSPTools\StockKSP1.7\KSP_x64_Data\Managed\UnityEngine.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

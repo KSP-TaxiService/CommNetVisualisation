@@ -60,51 +60,69 @@ namespace CommNetVisualisation.CommNetLayer
 
         public override void OnAwake()
         {
+            CNVCommNetScenario.Instance = this;
             //override to turn off CommNetScenario's instance check
         }
 
         private void OnDestroy()
         {
-            if (this.CustomCommNetUI != null)
-                UnityEngine.Object.Destroy(this.CustomCommNetUI);
+            if (CNVCommNetScenario.Instance == this)
+            {
+                if (this.CustomCommNetUI != null)
+                    UnityEngine.Object.Destroy(this.CustomCommNetUI);
 
-            if (this.CustomCommNetTelemetry != null)
-                UnityEngine.Object.Destroy(this.CustomCommNetTelemetry);
+                if (this.CustomCommNetTelemetry != null)
+                    UnityEngine.Object.Destroy(this.CustomCommNetTelemetry);
 
-            if (this.CustomCommNetModeButton != null)
-                UnityEngine.Object.Destroy(this.CustomCommNetModeButton);
+                if (this.CustomCommNetModeButton != null)
+                    UnityEngine.Object.Destroy(this.CustomCommNetModeButton);
+
+                CNVCommNetScenario.Instance = null;
+            }
         }
 
         public override void OnLoad(ConfigNode gameNode)
         {
-            base.OnLoad(gameNode);
-            UnityEngine.Debug.Log(string.Format("Scenario content to be read:\n{0}", gameNode));
-
-            //Other variables
-            for (int i = 0; i < gameNode.values.Count; i++)
+            try
             {
-                ConfigNode.Value value = gameNode.values[i];
-                string name = value.name;
-                switch (name)
+                UnityEngine.Debug.Log(string.Format("Scenario content to be read:\n{0}", gameNode));
+
+                //Other variables
+                for (int i = 0; i < gameNode.values.Count; i++)
                 {
-                    case "DisplayModeTracking":
-                        CNVCommNetUI.CustomModeTrackingStation = (CNVCommNetUI.CustomDisplayMode)((int)Enum.Parse(typeof(CNVCommNetUI.CustomDisplayMode), value.value));
-                        break;
-                    case "DisplayModeFlight":
-                        CNVCommNetUI.CustomModeFlightMap = (CNVCommNetUI.CustomDisplayMode)((int)Enum.Parse(typeof(CNVCommNetUI.CustomDisplayMode), value.value));
-                        break;
+                    ConfigNode.Value value = gameNode.values[i];
+                    string name = value.name;
+                    switch (name)
+                    {
+                        case "DisplayModeTracking":
+                            CNVCommNetUI.CustomModeTrackingStation = (CNVCommNetUI.CustomDisplayMode)((int)Enum.Parse(typeof(CNVCommNetUI.CustomDisplayMode), value.value));
+                            break;
+                        case "DisplayModeFlight":
+                            CNVCommNetUI.CustomModeFlightMap = (CNVCommNetUI.CustomDisplayMode)((int)Enum.Parse(typeof(CNVCommNetUI.CustomDisplayMode), value.value));
+                            break;
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                UnityEngine.Debug.LogError(string.Format("Error when loading CNVCommNetScenario: {0}", e.Message));
             }
         }
 
         public override void OnSave(ConfigNode gameNode)
         {
-            //Other variables
-            gameNode.AddValue("DisplayModeTracking", CNVCommNetUI.CustomModeTrackingStation);
-            gameNode.AddValue("DisplayModeFlight", CNVCommNetUI.CustomModeFlightMap);
+            try
+            {
+                //Other variables
+                gameNode.AddValue("DisplayModeTracking", CNVCommNetUI.CustomModeTrackingStation);
+                gameNode.AddValue("DisplayModeFlight", CNVCommNetUI.CustomModeFlightMap);
 
-            UnityEngine.Debug.Log(string.Format("Scenario content to be saved:\n{0}", gameNode));
-            base.OnSave(gameNode);
+                UnityEngine.Debug.Log(string.Format("Scenario content to be saved:\n{0}", gameNode));
+            }
+            catch (Exception e)
+            {
+                UnityEngine.Debug.LogError(string.Format("Error when saving CNVCommNetScenario: {0}", e.Message));
+            }
         }
     }
 }
